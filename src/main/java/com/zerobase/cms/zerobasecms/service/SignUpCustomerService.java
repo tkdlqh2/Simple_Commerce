@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Locale;
+
 @Service
 @RequiredArgsConstructor
 public class SignUpCustomerService {
@@ -19,5 +21,9 @@ public class SignUpCustomerService {
         customer.setPassword(passwordEncoder.encode(form.getPassword()));
         customerRepository.save(customer);
         return customer;
+    }
+
+    public boolean isEmailExist(String email){
+        return customerRepository.findByEmail(email.toLowerCase(Locale.ROOT)).isPresent();
     }
 }
