@@ -51,7 +51,7 @@ public class SignUpApplication {
     private String getVerificationEmailBody(String email,String name, String code){
         StringBuilder builder = new StringBuilder();
         return builder.append("Hello ").append(name).append(("! Please Click Link for verification.\n\n"))
-                .append("http://localhost:8080/customer/signup/verify?email=")
+                .append("http://localhost:8081/customer/signup/verify?email=")
                 .append(email)
                 .append("&code=")
                 .append(code).toString();
