@@ -19,6 +19,10 @@ public class SignUpApplication {
     private final MailgunClient mailgunClient;
     private final SignUpCustomerService signUpCustomerService;
 
+    public void customerVerify(String email,String code){
+        signUpCustomerService.verifyEmail(email, code);
+    }
+
     public String customerSignUp(SignUpForm form){
         if(signUpCustomerService.isEmailExist(form.getEmail())){
             throw new CustomException(ErrorCode.ALREADY_REGISTERED_USER);
