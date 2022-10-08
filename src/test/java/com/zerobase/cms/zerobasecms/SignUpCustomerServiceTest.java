@@ -1,6 +1,6 @@
 package com.zerobase.cms.zerobasecms;
 
-import com.zerobase.cms.zerobasecms.domain.CustomerRepository;
+import com.zerobase.cms.zerobasecms.domain.repository.CustomerRepository;
 import com.zerobase.cms.zerobasecms.domain.SignUpForm;
 import com.zerobase.cms.zerobasecms.domain.model.Customer;
 import com.zerobase.cms.zerobasecms.service.SignUpCustomerService;
