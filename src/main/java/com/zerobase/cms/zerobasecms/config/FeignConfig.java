@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class FeignConfig {
 
-    @Value("{mailgun.api_key}")
+    @Value("${mailgun.key}")
     private String apiKey;
 
     @Qualifier(value = "mailgun")
