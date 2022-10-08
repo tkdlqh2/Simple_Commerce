@@ -4,9 +4,11 @@ import com.zerobase.cms.zerobasecms.client.MailgunClient;
 import com.zerobase.cms.zerobasecms.client.mailgun.SendMailForm;
 import com.zerobase.cms.zerobasecms.domain.SignUpForm;
 import com.zerobase.cms.zerobasecms.domain.model.Customer;
+import com.zerobase.cms.zerobasecms.domain.model.Seller;
 import com.zerobase.cms.zerobasecms.exception.CustomException;
 import com.zerobase.cms.zerobasecms.exception.ErrorCode;
-import com.zerobase.cms.zerobasecms.service.SignUpCustomerService;
+import com.zerobase.cms.zerobasecms.service.customer.SignUpCustomerService;
+import com.zerobase.cms.zerobasecms.service.seller.SignUpSellerService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 public class SignUpApplication {
     private final MailgunClient mailgunClient;
     private final SignUpCustomerService signUpCustomerService;
+    private final SignUpSellerService signUpSellerService;
 
     public void customerVerify(String email,String code){
         signUpCustomerService.verifyEmail(email, code);
@@ -35,7 +38,7 @@ public class SignUpApplication {
                     .from("yhj7124@naver.com")
                     .to(form.getEmail())
                     .subject("Verification Email!")
-                    .text(getVerificationEmailBody(form.getEmail(), form.getName(), getRandomCode()))
+                    .text(getVerificationEmailBody(form.getEmail(), form.getName(),"customer", getRandomCode()))
                     .build();
 
             mailgunClient.sendEmail(sendMailForm);
@@ -44,16 +47,41 @@ public class SignUpApplication {
         }
     }
 
+    public String sellerSignUp(SignUpForm form){
+        if(signUpSellerService.isEmailExist(form.getEmail())){
+            throw new CustomException(ErrorCode.ALREADY_REGISTERED_USER);
+        }else{
+            Seller s= signUpSellerService.signUp(form);
+            LocalDateTime now= LocalDateTime.now();
+
+            String code = getRandomCode();
+            SendMailForm sendMailForm = SendMailForm.builder()
+                    .from("yhj7124@naver.com")
+                    .to(form.getEmail())
+                    .subject("Verification Email!")
+                    .text(getVerificationEmailBody(form.getEmail(), form.getName(),"seller", getRandomCode()))
+                    .build();
+
+            mailgunClient.sendEmail(sendMailForm);
+            signUpCustomerService.changeCustomerValidateEmail(s.getId(),code);
+            return "회원 가입에 성공하였습니다.";
+        }
+    }
+
     private String getRandomCode(){
         return RandomStringUtils.random(10,true,true);
     }
 
-    private String getVerificationEmailBody(String email,String name, String code){
+    private String getVerificationEmailBody(String email,String name, String type,String code){
         StringBuilder builder = new StringBuilder();
         return builder.append("Hello ").append(name).append(("! Please Click Link for verification.\n\n"))
-                .append("http://localhost:8081/customer/signup/verify?email=")
+                .append("http://localhost:8081/signup/"+type+"/verify?email=")
                 .append(email)
                 .append("&code=")
                 .append(code).toString();
+    }
+
+    public void sellerVerify(String email, String code) {
+        signUpSellerService.verifyEmail(email, code);
     }
 }
