@@ -1,9 +1,6 @@
 package com.zerobase.cms.order.controller;
 
-import com.zerobase.cms.order.domain.product.AddProductForm;
-import com.zerobase.cms.order.domain.product.AddProductItemForm;
-import com.zerobase.cms.order.domain.product.ProductDto;
-import com.zerobase.cms.order.domain.product.ProductItemDto;
+import com.zerobase.cms.order.domain.product.*;
 import com.zerobase.cms.order.service.ProductItemService;
 import com.zerobase.cms.order.service.ProductService;
 import com.zerobase.domain.config.JwtAuthenticationProvider;
@@ -32,5 +29,19 @@ public class SellerProductController {
                                                          @RequestBody AddProductItemForm form){
 
         return ResponseEntity.ok(ProductDto.from(productItemService.addProductItem(provider.getUser(token).getId(),form)));
+    }
+
+    @PutMapping
+    public ResponseEntity<ProductDto> updateProduct(@RequestHeader(name = "X_AUTH_TOKEN") String token,
+                                                 @RequestBody UpdateProductForm form){
+
+        return ResponseEntity.ok(ProductDto.from(productService.updateProduct(provider.getUser(token).getId(),form)));
+    }
+
+    @PutMapping("/item")
+    public ResponseEntity<ProductItemDto> updateProductItem(@RequestHeader(name = "X_AUTH_TOKEN") String token,
+                                                     @RequestBody UpdateProductItemForm form){
+
+        return ResponseEntity.ok(ProductItemDto.from(productItemService.updateProductItem(provider.getUser(token).getId(),form)));
     }
 }
