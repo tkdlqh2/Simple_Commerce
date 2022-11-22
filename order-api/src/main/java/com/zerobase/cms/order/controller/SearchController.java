@@ -2,8 +2,6 @@ package com.zerobase.cms.order.controller;
 
 import com.zerobase.cms.order.domain.product.ProductDto;
 import com.zerobase.cms.order.service.ProductSearchService;
-import com.zerobase.domain.config.JwtAuthenticationProvider;
-import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
