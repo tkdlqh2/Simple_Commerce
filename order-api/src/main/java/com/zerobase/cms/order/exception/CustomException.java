@@ -22,7 +22,7 @@ public class CustomException extends RuntimeException{
     @Builder
     @NoArgsConstructor
     @Getter
-    public static class CustomeExceptionResponse{
+    public static class CustomExceptionResponse{
         private int status;
         private String code;
         private String message;

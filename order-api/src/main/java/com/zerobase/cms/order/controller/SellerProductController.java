@@ -40,7 +40,7 @@ public class SellerProductController {
 
     @PutMapping("/item")
     public ResponseEntity<ProductItemDto> updateProductItem(@RequestHeader(name = "X_AUTH_TOKEN") String token,
-                                                     @RequestBody UpdateProductItemForm form){
+                                                            @RequestBody UpdateProductItemForm form){
 
         return ResponseEntity.ok(ProductItemDto.from(productItemService.updateProductItem(provider.getUser(token).getId(),form)));
     }
