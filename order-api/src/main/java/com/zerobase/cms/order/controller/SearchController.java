@@ -3,6 +3,7 @@ package com.zerobase.cms.order.controller;
 import com.zerobase.cms.order.domain.product.ProductDto;
 import com.zerobase.cms.order.service.ProductSearchService;
 import com.zerobase.domain.config.JwtAuthenticationProvider;
+import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class SearchController {
     private final ProductSearchService productSearchService;
-    private final JwtAuthenticationProvider provider;
 
     @GetMapping
     public ResponseEntity<List<ProductDto>> searchByName(@RequestParam String name){
@@ -26,5 +26,12 @@ public class SearchController {
                 productSearchService.searchByName(name).stream()
                         .map(ProductDto::withoutItemsFrom).collect(Collectors.toList()));
     }
+
+    @GetMapping("/detail")
+    public ResponseEntity<ProductDto> getDetail(@RequestParam Long productId){
+        return ResponseEntity.ok(
+                ProductDto.from(productSearchService.getByProductId(productId)));
+    }
+
 
 }
