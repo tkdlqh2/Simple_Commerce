@@ -6,6 +6,8 @@ import com.zerobase.cms.order.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static com.zerobase.cms.order.exception.ErrorCode.NOT_FOUND_PRODUCT;
 
 @Service
@@ -18,4 +20,7 @@ public class ProductSearchService {
                 .orElseThrow(()-> new CustomException(NOT_FOUND_PRODUCT));
     }
 
+    public List<Product> getListByProductIds(List<Long> productIds){
+        return productRepository.findAllById(productIds);
+    }
 }
