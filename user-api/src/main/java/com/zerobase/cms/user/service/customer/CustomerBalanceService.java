@@ -21,14 +21,14 @@ public class CustomerBalanceService {
     public CustomerBalanceHistory changeBalance(Long customerId, ChangeBalanceForm form)
             throws CustomException {
         CustomerBalanceHistory customerBalanceHistory =
-                customerBalanceHistoryRepository.findFirstByCustomer_idOrderByIdDesc(customerId)
+                customerBalanceHistoryRepository.findFirstByCustomer_IdOrderByIdDesc(customerId)
                         .orElse(CustomerBalanceHistory.builder()
                                 .changeMoney(0)
                                 .currentMoney(0)
                                 .customer(customerRepository.findById(customerId)
                                         .orElseThrow(() -> new CustomException(ErrorCode.UNREGISTERED_USER)))
                                 .build());
-        if (customerBalanceHistory.getChangeMoney() + form.getMoney() < 0) {
+        if (customerBalanceHistory.getCurrentMoney() + form.getMoney() < 0) {
             throw new CustomException(ErrorCode.NOT_ENOUGH_BALANCE);
         }
 
@@ -41,7 +41,7 @@ public class CustomerBalanceService {
                 .build();
 
         customerBalanceHistory.getCustomer().setBalance(customerBalanceHistory.getCurrentMoney());
-
+        customerBalanceHistoryRepository.save(customerBalanceHistory);
         return customerBalanceHistory;
     }
 }

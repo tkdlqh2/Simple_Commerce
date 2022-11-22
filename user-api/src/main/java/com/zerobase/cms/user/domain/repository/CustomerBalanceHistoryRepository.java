@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface CustomerBalanceHistoryRepository extends JpaRepository<CustomerBalanceHistory,Long> {
 
-    Optional<CustomerBalanceHistory> findFirstByCustomer_idOrderByIdDesc(@RequestParam("customer_id") Long customerId);
+    Optional<CustomerBalanceHistory> findFirstByCustomer_IdOrderByIdDesc(@RequestParam("customer_id") Long customerId);
 }

@@ -57,6 +57,6 @@ public class SignUpCustomerService {
         );
 
         customer.setVerificationCode(verificationCode);
-        customer.setVerifyExpiredAt(LocalDateTime.now());
+        customer.setVerifyExpiredAt(LocalDateTime.now().plusDays(1));
     }
 }

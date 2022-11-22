@@ -33,7 +33,6 @@ public class SignUpApplication {
             throw new CustomException(ErrorCode.ALREADY_REGISTERED_USER);
         }else{
             Customer c= signUpCustomerService.signUp(form);
-            LocalDateTime now= LocalDateTime.now();
 
             String code = getRandomCode();
             SendMailForm sendMailForm = SendMailForm.builder()

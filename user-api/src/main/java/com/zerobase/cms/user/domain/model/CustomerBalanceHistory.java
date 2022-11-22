@@ -1,6 +1,7 @@
 package com.zerobase.cms.user.domain.model;
 
 import lombok.*;
+import org.hibernate.envers.AuditOverride;
 
 import javax.persistence.*;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@AuditOverride(forClass = BaseEntity.class)
 public class CustomerBalanceHistory extends BaseEntity{
 
     @Id
