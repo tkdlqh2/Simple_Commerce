@@ -1,9 +1,21 @@
 package com.zerobase.cms.order.service;
 
+import com.zerobase.cms.order.domain.model.Product;
+import com.zerobase.cms.order.domain.respository.ProductRepository;
+import com.zerobase.cms.order.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static com.zerobase.cms.order.exception.ErrorCode.NOT_FOUND_PRODUCT;
 
 @Service
 @RequiredArgsConstructor
 public class ProductSearchService {
+    private final ProductRepository productRepository;
+
+    public Product getByProductId(Long productId){
+        return productRepository.findWithProductItemsById(productId)
+                .orElseThrow(()-> new CustomException(NOT_FOUND_PRODUCT));
+    }
+
 }
