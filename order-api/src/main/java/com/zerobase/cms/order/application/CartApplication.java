@@ -38,6 +38,9 @@ public class CartApplication {
         }
     }
 
+    public Cart getCart(Long customerId){
+        return cartService.getCart(customerId);
+    }
 
     private boolean addAble(Cart cart,Product product,AddProductCartForm form){
         Cart.Product cartProduct = cart.getProducts().stream()
