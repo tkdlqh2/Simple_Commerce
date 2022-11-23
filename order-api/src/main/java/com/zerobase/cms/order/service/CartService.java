@@ -69,4 +69,10 @@ public class CartService {
             return cart;
         }
     }
+
+
+    public Cart putCart(Long customerId, Cart cart){
+        redisClient.put(customerId,cart);
+        return cart;
+    }
 }
