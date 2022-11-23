@@ -1,0 +1,7 @@
+server:
+  shutdown: graceful
+
+spring:
+  redis:
+    host: localhost
+    port: 6372
