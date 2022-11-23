@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -53,7 +54,7 @@ public class CartApplication {
 
     private Cart refreshCart(Cart cart){
        Map<Long,Product> productMap = productSearchService.getListByProductIds(new ArrayList<>(cart.getProducts().stream().map(
-               x-> x.getId()).collect(Collectors.toList()))).stream()
+                       Cart.Product::getId).collect(Collectors.toList()))).stream()
                .collect(Collectors.toMap(Product::getId, product -> product));
 
        for(int i=0; i<cart.getProducts().size();i++){
@@ -111,7 +112,8 @@ public class CartApplication {
     private boolean addAble(Cart cart,Product product,AddProductCartForm form){
         Cart.Product cartProduct = cart.getProducts().stream()
                 .filter(p -> p.getId().equals(form.getProductId()))
-                .findFirst().orElseThrow(() -> new CustomException(NOT_FOUND_PRODUCT));
+                .findFirst().orElse(Cart.Product.builder().id(product.getId())
+                        .items(Collections.emptyList()).build());
 
         Map<Long,Integer> cartItemCountMap = cartProduct.getItems().stream()
                 .collect(Collectors.toMap(Cart.ProductItem::getId,Cart.ProductItem::getCount));
@@ -122,6 +124,9 @@ public class CartApplication {
         return form.getItems().stream().noneMatch(
                 formItem -> {
                     Integer cartCount = cartItemCountMap.get(formItem.getId());
+                    if(cartCount == null){
+                        cartCount = 0;
+                    }
                     Integer currentCount = currentItemCountMap.get(formItem.getId());
                     return formItem.getCount() + cartCount > currentCount;
                 });
