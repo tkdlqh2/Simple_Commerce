@@ -18,3 +18,8 @@ spring:
   redis:
     host: localhost
     port: 6379
+
+feign:
+  client:
+    url:
+      user-api: localhost:8081
