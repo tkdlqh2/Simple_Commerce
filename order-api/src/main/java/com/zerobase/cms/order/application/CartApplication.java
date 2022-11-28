@@ -52,6 +52,11 @@ public class CartApplication {
         return returnCart;
     }
 
+    public Cart updateCart(Long customerId, Cart cart){
+        cartService.putCart(customerId, cart);
+        return getCart(customerId);
+    }
+
     private Cart refreshCart(Cart cart){
        Map<Long,Product> productMap = productSearchService.getListByProductIds(new ArrayList<>(cart.getProducts().stream().map(
                        Cart.Product::getId).collect(Collectors.toList()))).stream()
