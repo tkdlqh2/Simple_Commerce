@@ -43,6 +43,7 @@ public class CartApplication {
 
     public Cart getCart(Long customerId){
         Cart cart  = refreshCart(cartService.getCart(customerId));
+        cartService.putCart(cart.getCustomerId(),cart);
         Cart returnCart = new Cart();
         returnCart.setCustomerId(customerId);
         returnCart.setProducts(cart.getProducts());
@@ -57,7 +58,7 @@ public class CartApplication {
         return getCart(customerId);
     }
 
-    private Cart refreshCart(Cart cart){
+    protected Cart refreshCart(Cart cart){
        Map<Long,Product> productMap = productSearchService.getListByProductIds(new ArrayList<>(cart.getProducts().stream().map(
                        Cart.Product::getId).collect(Collectors.toList()))).stream()
                .collect(Collectors.toMap(Product::getId, product -> product));
@@ -110,7 +111,6 @@ public class CartApplication {
                 }
            }
        }
-        cartService.putCart(cart.getCustomerId(),cart);
         return cart;
     }
 
