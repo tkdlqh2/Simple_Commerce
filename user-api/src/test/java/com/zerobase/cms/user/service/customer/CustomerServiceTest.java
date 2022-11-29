@@ -41,5 +41,23 @@ class CustomerServiceTest {
         assertEquals(customer, result.get());
     }
 
+    @Test
+    void findValidCustomerTest() {
+        //given
+        Customer customer = Customer.builder()
+                .email("abc@gmail.com")
+                .password("1234")
+                .verify(true)
+                .build();
+
+        given(customerRepository.findByEmail("abc@gmail.com"))
+                .willReturn(Optional.of(customer));
+        given(passwordEncoder.matches("1111","1234")).willReturn(true);
+        //when
+        var result = customerService.findValidCustomer("abc@gmail.com","1111");
+        //then
+        assertEquals(customer,result.get());
+    }
+
 
 }
