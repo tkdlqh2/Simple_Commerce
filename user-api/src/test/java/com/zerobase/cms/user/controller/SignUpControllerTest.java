@@ -18,7 +18,9 @@ import java.time.LocalDate;
 import static com.zerobase.cms.user.exception.ErrorCode.ALREADY_REGISTERED_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,6 +40,9 @@ class SignUpControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private static final String USER_EMAIL = "abc@gmail.com";
+    private static final String CODE = "code";
 
     @Test
     void customerSignUpSuccess() throws Exception {
@@ -102,4 +107,25 @@ class SignUpControllerTest {
                 .andExpect(jsonPath("$.message").value(ALREADY_REGISTERED_USER.getDetail()))
                 .andDo(print());
     }
+
+    @Test
+    void customerVerifySuccess() throws Exception {
+        //given
+        SignUpForm form = SignUpForm.builder()
+                .email("abc@gmail.com")
+                .name("홍길동")
+                .password("abcd2@ef")
+                .birth(LocalDate.of(1990,1,1))
+                .build();
+        doNothing().when(signUpApplication).customerVerify(USER_EMAIL,CODE);
+        //when
+        //then
+        mockMvc.perform(get("/signup/customer/verify")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("인증이 완료되었습니다."))
+                .andDo(print());
+    }
+
 }
