@@ -11,7 +11,6 @@ import java.util.Locale;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -45,6 +44,23 @@ public class Customer extends BaseEntity{
                 .birth(form.getBirth())
                 .phone(form.getPhone())
                 .build();
+    }
+
+    public void setPassword(String password){
+        this.password = password;
+    }
+
+    public void setVerify(boolean verify){
+        this.verify = verify;
+    }
+
+    public void setBalance(Integer balance){
+        this.balance = balance;
+    }
+
+    public void setVerification(String verificationCode){
+        this.verificationCode = verificationCode;
+        this.verifyExpiredAt = LocalDateTime.now().plusDays(1);
     }
 
 

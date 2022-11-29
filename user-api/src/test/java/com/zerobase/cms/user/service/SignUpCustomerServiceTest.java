@@ -158,4 +158,35 @@ public class SignUpCustomerServiceTest {
         }
     }
 
+    @Test
+    void changeCustomerValidateEmailSuccess() {
+        //given
+        Customer customer = Customer.builder()
+                .verify(false)
+                .verificationCode("code")
+                .verifyExpiredAt(LocalDateTime.now().minusDays(1))
+                .build();
+
+        given(customerRepository.findById(1L)).willReturn(Optional.of(customer));
+        //when
+        service.changeCustomerValidateEmail(1L,"code");
+        //then
+    }
+
+    @Test
+    void changeCustomerValidateEmailFail_NoUser() {
+        //given
+        given(customerRepository.findById(1L)).willReturn(Optional.empty());
+
+        //when
+        try{
+            service.changeCustomerValidateEmail(1L,"code");
+
+            throw new RuntimeException("예외가 일어나지 않음");
+        }catch (Exception e){
+            assertEquals(UNREGISTERED_USER.getDetail(),e.getMessage());
+        }
+        //then
+    }
+
 }
