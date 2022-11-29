@@ -128,4 +128,88 @@ class SignUpControllerTest {
                 .andDo(print());
     }
 
+    @Test
+    void sellerSignUpSuccess() throws Exception {
+        //given
+        SignUpForm form = SignUpForm.builder()
+                .email("abc@gmail.com")
+                .name("홍길동")
+                .password("abcd2@ef")
+                .birth(LocalDate.of(1990,1,1))
+                .build();
+
+        given(signUpApplication.sellerSignUp(any()))
+                .willReturn("");
+        //when
+        //then
+        mockMvc.perform(post("/signup/seller")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("가입 신청이 완료되었습니다."))
+                .andDo(print());
+    }
+
+    @Test
+    void sellerSignUpFail_ArgumentException() throws Exception {
+        //given
+
+        SignUpForm form = SignUpForm.builder()
+                .email("abc@gmail.com")
+                .name("홍길동")
+                .password("abcd")
+                .birth(LocalDate.of(1990,1,1))
+                .build();
+        //when
+        //then
+        mockMvc.perform(post("/signup/seller")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").isNotEmpty())
+                .andDo(print());
+    }
+
+    @Test
+    void sellerSignUpFail_AlreadyRegisteredUser() throws Exception {
+        //given
+        SignUpForm form = SignUpForm.builder()
+                .email("abc@gmail.com")
+                .name("홍길동")
+                .password("abcd2@ef")
+                .birth(LocalDate.of(1990,1,1))
+                .build();
+
+        doThrow(new CustomException(ALREADY_REGISTERED_USER))
+                .when(signUpApplication).sellerSignUp(any());
+        //when
+        //then
+        mockMvc.perform(post("/signup/seller")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ALREADY_REGISTERED_USER.getDetail()))
+                .andDo(print());
+    }
+
+    @Test
+    void sellerVerifySuccess() throws Exception {
+        //given
+        SignUpForm form = SignUpForm.builder()
+                .email("abc@gmail.com")
+                .name("홍길동")
+                .password("abcd2@ef")
+                .birth(LocalDate.of(1990,1,1))
+                .build();
+        doNothing().when(signUpApplication).sellerVerify(USER_EMAIL,CODE);
+        //when
+        //then
+        mockMvc.perform(get("/signup/seller/verify")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("인증이 완료되었습니다."))
+                .andDo(print());
+    }
+
 }
