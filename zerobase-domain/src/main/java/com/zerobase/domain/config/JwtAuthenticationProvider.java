@@ -9,6 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class JwtAuthenticationProvider {
 
@@ -37,6 +38,7 @@ public class JwtAuthenticationProvider {
 
     public UserVo getUser(String token){
         Claims c = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-        return new UserVo(Long.valueOf(Aes256Util.decrypt(c.getId())),Aes256Util.decrypt(c.getSubject()));
+        return new UserVo(Long.valueOf(Objects.requireNonNull(Aes256Util.decrypt(c.getId())))
+                , Aes256Util.decrypt(c.getSubject()));
     }
 }
