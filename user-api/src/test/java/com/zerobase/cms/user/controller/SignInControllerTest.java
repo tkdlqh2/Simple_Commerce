@@ -3,6 +3,7 @@ package com.zerobase.cms.user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zerobase.cms.user.application.SignInApplication;
 import com.zerobase.cms.user.domain.SignInForm;
+import com.zerobase.cms.user.exception.CustomException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
@@ -12,8 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.zerobase.cms.user.exception.ErrorCode.LOGIN_CHECK_FAIL;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -56,6 +59,24 @@ class SignInControllerTest {
     }
 
     @Test
+    void signInCustomerFail() throws Exception {
+        //given
+
+        SignInForm form = new SignInForm(USER_EMAIL,USER_PASSWORD);
+
+        doThrow(new CustomException(LOGIN_CHECK_FAIL))
+                .when(signInApplication).customerLoginToken(any());
+        //when
+        //then
+        mockMvc.perform(post("/signIn/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(LOGIN_CHECK_FAIL.getDetail()))
+                .andDo(print());
+    }
+
+    @Test
     void signInSellerSuccess() throws Exception {
         //given
 
@@ -70,6 +91,24 @@ class SignInControllerTest {
                         .content(objectMapper.writeValueAsString(form)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").value("tokenString"))
+                .andDo(print());
+    }
+
+    @Test
+    void signInSellerFail() throws Exception {
+        //given
+
+        SignInForm form = new SignInForm(USER_EMAIL,USER_PASSWORD);
+
+        doThrow(new CustomException(LOGIN_CHECK_FAIL))
+                .when(signInApplication).sellerLoginToken(any());
+        //when
+        //then
+        mockMvc.perform(post("/signIn/seller")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(form)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(LOGIN_CHECK_FAIL.getDetail()))
                 .andDo(print());
     }
 }
