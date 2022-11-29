@@ -74,8 +74,8 @@ public class SignUpCustomerServiceTest {
         service.verifyEmail("","code");
 //        ArgumentCaptor<Customer> captor = ArgumentCaptor.forClass(Customer.class);
         //then
-//        verify(customerRepository,times(1)).save(captor.capture());
-//        var customerCaptured = captor.capture();
+//        verify(customerRepository,times(1)).save(captor);
+//        var customerCaptured = captor.getValue();
 //        assertEquals(true,customerCaptured);
     }
 
