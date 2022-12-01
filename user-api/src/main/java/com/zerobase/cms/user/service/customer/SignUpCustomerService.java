@@ -56,7 +56,6 @@ public class SignUpCustomerService {
                 ()-> new CustomException(ErrorCode.UNREGISTERED_USER)
         );
 
-        customer.setVerificationCode(verificationCode);
-        customer.setVerifyExpiredAt(LocalDateTime.now().plusDays(1));
+        customer.setVerification(verificationCode);
     }
 }

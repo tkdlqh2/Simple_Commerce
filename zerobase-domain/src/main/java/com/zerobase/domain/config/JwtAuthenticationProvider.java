@@ -7,9 +7,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Objects;
 
+@Component
 public class JwtAuthenticationProvider {
 
     private final String SECRET_KEY = "secretKey";
@@ -37,6 +40,7 @@ public class JwtAuthenticationProvider {
 
     public UserVo getUser(String token){
         Claims c = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
-        return new UserVo(Long.valueOf(Aes256Util.decrypt(c.getId())),Aes256Util.decrypt(c.getSubject()));
+        return new UserVo(Long.valueOf(Objects.requireNonNull(Aes256Util.decrypt(c.getId())))
+                , Aes256Util.decrypt(c.getSubject()));
     }
 }
