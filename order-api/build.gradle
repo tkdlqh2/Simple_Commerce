@@ -49,6 +49,8 @@ dependencies {
     implementation 'org.springframework.data:spring-data-envers'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation group: 'org.mockito', name: 'mockito-inline', version: '3.7.7'
+
 }
 ext{
     set('springCloudVersion',"2021.0.1")
