@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.zerobase.cms.order.exception.ErrorCode.NOT_FOUND_ITEM;
+import static com.zerobase.cms.order.exception.ErrorCode.NOT_FOUND_PRODUCT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
@@ -60,7 +62,6 @@ class ProductServiceTest {
     @Test
     void updateProductSuccess(){
 
-
         //given
         AddProductForm addForm = makeProductForm("나이키 에어포스","좋은 신발",5);
         Product p = Product.of(1L,addForm);
@@ -85,7 +86,49 @@ class ProductServiceTest {
         assertEquals(result.getProductItems().get(0).getName(),"나이키 에어포스 수정본0");
         assertEquals(result.getProductItems().get(0).getPrice(),2000);
         assertEquals(result.getProductItems().get(0).getCount(),2);
+    }
 
+    @Test
+    void updateProductFail_NoProduct(){
+
+        //given
+        given(productRepository.findBySellerIdAndId(1L,1L)).willReturn(Optional.empty());
+        UpdateProductForm form = updateProductForm("오캬캬","설명",2);
+
+        //when
+        //then
+        try{
+            productService.updateProduct(1L,form);
+            throw new RuntimeException("에러가 발생하지 않음");
+        } catch (Exception e){
+            assertEquals(NOT_FOUND_PRODUCT.getDetail(),e.getMessage());
+        }
+
+    }
+
+    @Test
+    void updateProductFail_ProductItemNotFound(){
+
+        //given
+        AddProductForm addForm = makeProductForm("나이키 에어포스","좋은 신발",5);
+        Product p = Product.of(1L,addForm);
+        Long idx=5L;
+        for(ProductItem item: p.getProductItems()){
+            item.setId(idx);
+            idx++;
+        }
+
+        given(productRepository.findBySellerIdAndId(1L,1L)).willReturn(Optional.of(p));
+        UpdateProductForm form = updateProductForm("실패할 상품 명","",3);
+
+        //when
+        //then
+        try{
+            productService.updateProduct(1L,form);
+            throw new RuntimeException("에러가 발생하지 않음");
+        } catch (Exception e){
+            assertEquals(NOT_FOUND_ITEM.getDetail(),e.getMessage());
+        }
     }
 
     private AddProductForm makeProductForm(String name, String description,int itemCount){
