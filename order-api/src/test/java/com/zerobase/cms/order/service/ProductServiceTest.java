@@ -9,6 +9,7 @@ import com.zerobase.cms.order.domain.product.UpdateProductItemForm;
 import com.zerobase.cms.order.domain.respository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -22,7 +23,7 @@ import static com.zerobase.cms.order.exception.ErrorCode.NOT_FOUND_PRODUCT;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
@@ -31,6 +32,8 @@ class ProductServiceTest {
     private ProductRepository productRepository;
     @InjectMocks
     private ProductService productService;
+
+    private static final String NO_ERROR = "에러가 발생하지 않음";
 
     @Test
     void addProductSuccess(){
@@ -99,7 +102,7 @@ class ProductServiceTest {
         //then
         try{
             productService.updateProduct(1L,form);
-            throw new RuntimeException("에러가 발생하지 않음");
+            throw new RuntimeException(NO_ERROR);
         } catch (Exception e){
             assertEquals(NOT_FOUND_PRODUCT.getDetail(),e.getMessage());
         }
@@ -125,11 +128,51 @@ class ProductServiceTest {
         //then
         try{
             productService.updateProduct(1L,form);
-            throw new RuntimeException("에러가 발생하지 않음");
+            throw new RuntimeException(NO_ERROR);
         } catch (Exception e){
             assertEquals(NOT_FOUND_ITEM.getDetail(),e.getMessage());
         }
     }
+
+    @Test
+    void deleteProductSuccess() {
+        //given
+
+        Product product = Product.builder()
+                .id(1L)
+                .sellerId(2L)
+                .build();
+        given(productRepository.findBySellerIdAndId(2L,1L))
+                .willReturn(Optional.of(product));
+
+        ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
+
+        //when
+        productService.deleteProduct(2L,1L);
+        //then
+        verify(productRepository,times(1)).delete(captor.capture());
+        var capturedProduct = captor.getValue();
+
+        assertEquals(1L,capturedProduct.getId());
+        assertEquals(2L,capturedProduct.getSellerId());
+    }
+
+    @Test
+    void deleteProductFail_ProductNotFound() {
+        //given
+        given(productRepository.findBySellerIdAndId(2L,1L))
+                .willReturn(Optional.empty());
+
+        //when
+        //then
+        try{
+            productService.deleteProduct(2L,1L);
+            throw new RuntimeException(NO_ERROR);
+        } catch (Exception e){
+            assertEquals(NOT_FOUND_PRODUCT.getDetail(),e.getMessage());
+        }
+    }
+
 
     private AddProductForm makeProductForm(String name, String description,int itemCount){
         List<AddProductItemForm> itemForms = new ArrayList<>();
