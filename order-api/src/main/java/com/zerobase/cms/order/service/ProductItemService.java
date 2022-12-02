@@ -44,12 +44,10 @@ public class ProductItemService {
 
     @Transactional
     public ProductItem updateProductItem(Long sellerId, UpdateProductItemForm form){
-        ProductItem productItem = productItemRepository.findById(form.getId())
+        ProductItem productItem = productItemRepository.findById(form.getProductItemId())
                 .filter(pi->pi.getSellerId().equals(sellerId)).orElseThrow(
                         ()->new CustomException(ErrorCode.NOT_FOUND_ITEM));
-        productItem.setName(form.getName());
-        productItem.setCount(form.getCount());
-        productItem.setPrice(form.getPrice());
+        productItem.updateFromForm(form);
         return productItem;
     }
 

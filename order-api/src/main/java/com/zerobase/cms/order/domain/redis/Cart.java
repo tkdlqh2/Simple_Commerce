@@ -38,7 +38,7 @@ public class Cart {
         private Long sellerId;
         private String name;
         private String description;
-        private List<ProductItem> items = new ArrayList<>();
+        private List<ProductItem> items;
 
         public static Product from(AddProductCartForm form){
             return Product.builder()
