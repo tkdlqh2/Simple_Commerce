@@ -1,10 +1,7 @@
 package com.zerobase.cms.order.domain.redis;
 
 import com.zerobase.cms.order.domain.product.AddProductCartForm;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.Id;
@@ -12,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
+@Getter
 @NoArgsConstructor
 @RedisHash("cart")
 public class Cart {
@@ -29,7 +26,23 @@ public class Cart {
         messages.add(message);
     }
 
-    @Data
+    public void addProduct(Product product){
+        this.products.add(product);
+    }
+
+    public void addMessage(List<String> messages){
+        messages.stream().forEach(this::addMessage);
+    }
+
+    public void initializeMessages(){
+        this.messages = new ArrayList<>();
+    }
+
+    public void setProducts(List<Product> products){
+        this.products = products;
+    }
+
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -49,9 +62,13 @@ public class Cart {
                     .items(form.getItems().stream().map(ProductItem::from).collect(Collectors.toList()))
                     .build();
         }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 
-    @Data
+    @Getter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
@@ -68,6 +85,14 @@ public class Cart {
                     .count(form.getCount())
                     .price(form.getPrice())
                     .build();
+        }
+
+        public void setCount(Integer count){
+            this.count = count;
+        }
+
+        public void setPrice(Integer price){
+            this.price = price;
         }
     }
 }

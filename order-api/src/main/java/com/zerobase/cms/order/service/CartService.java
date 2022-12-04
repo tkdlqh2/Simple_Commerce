@@ -28,8 +28,7 @@ public class CartService {
 
         Cart cart = redisClient.get(customerId, Cart.class);
         if(cart == null){
-            cart = new Cart();
-            cart.setCustomerId(customerId);
+            cart = new Cart(customerId);
         }
 
         Optional<Cart.Product> productOptional = cart.getProducts().stream()
@@ -45,7 +44,8 @@ public class CartService {
                     .collect(Collectors.toMap(Cart.ProductItem::getId, item -> item));
 
             if(!redisProduct.getName().equals(form.getName())){
-                cart.addMessage(redisProduct.getName()+"의 정보가 변경되었습니다. 확인 부탁드립니다.");
+                cart.addMessage(redisProduct.getName()+"의 정보가 "+form.getName()+"(으)로 변경되었습니다. 확인 부탁드립니다.");
+                redisProduct.setName(form.getName());
             }
 
             for(Cart.ProductItem item : items){
@@ -55,16 +55,17 @@ public class CartService {
                     redisProduct.getItems().add(item);
                 }else{
                     if(!redisItem.getPrice().equals(item.getPrice())){
-                        cart.addMessage(redisProduct.getName()+item.getName()+"의 가격이 변경되었습니다.");
+                        cart.addMessage(redisProduct.getName()+" "+item.getName()+"의 가격이 변경되었습니다.");
+                        redisItem.setPrice(item.getPrice());
                     }
                     redisItem.setCount(redisItem.getCount()+item.getCount());
                 }
             }
-
+            redisClient.put(customerId,cart);
             return cart;
         }else{
             Cart.Product product = Cart.Product.from(form);
-            cart.getProducts().add(product);
+            cart.addProduct(product);
             redisClient.put(customerId,cart);
             return cart;
         }

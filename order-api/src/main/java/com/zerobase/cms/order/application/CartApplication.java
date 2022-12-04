@@ -44,11 +44,10 @@ public class CartApplication {
     public Cart getCart(Long customerId){
         Cart cart  = refreshCart(cartService.getCart(customerId));
         cartService.putCart(cart.getCustomerId(),cart);
-        Cart returnCart = new Cart();
-        returnCart.setCustomerId(customerId);
+        Cart returnCart = new Cart(customerId);
         returnCart.setProducts(cart.getProducts());
-        returnCart.setMessages(cart.getMessages());
-        cart.setMessages(new ArrayList<>());
+        returnCart.addMessage(cart.getMessages());
+        cart.initializeMessages();
         cartService.putCart(customerId,cart);
         return returnCart;
     }
