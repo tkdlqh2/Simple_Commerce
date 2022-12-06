@@ -42,6 +42,9 @@ public class Cart {
         this.products = products;
     }
 
+    public void removeProduct(Product product){
+        this.products.remove(product);
+    }
     @Getter
     @Builder
     @NoArgsConstructor
