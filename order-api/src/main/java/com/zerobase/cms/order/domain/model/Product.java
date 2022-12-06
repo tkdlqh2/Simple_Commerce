@@ -1,18 +1,20 @@
 package com.zerobase.cms.order.domain.model;
 
 import com.zerobase.cms.order.domain.product.AddProductForm;
-import lombok.*;
+import com.zerobase.cms.order.domain.product.UpdateProductForm;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.envers.AuditOverride;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Entity
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +30,7 @@ public class Product extends BaseEntity{
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
-    private List<ProductItem> productItems = new ArrayList<>();
+    private List<ProductItem> productItems;
 
     public static Product of(Long sellerId,AddProductForm form){
         return Product.builder()
@@ -39,4 +41,9 @@ public class Product extends BaseEntity{
                         .map(piForm-> ProductItem.of(sellerId,piForm)).collect(Collectors.toList()))
                 .build();
     }
+    public void updateByForm(UpdateProductForm form){
+        this.name = form.getName();
+        this.description = form.getDescription();
+    }
+
 }

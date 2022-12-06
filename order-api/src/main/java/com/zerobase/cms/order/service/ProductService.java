@@ -19,23 +19,21 @@ public class ProductService {
 
     @Transactional
     public Product addProduct(Long sellerId, AddProductForm form){
-        return productRepository.save(Product.of(sellerId, form));
+        var product  = Product.of(sellerId, form);
+        return productRepository.save(product);
     }
 
     @Transactional
     public Product updateProduct(Long sellerId, UpdateProductForm form){
         Product product = productRepository.findBySellerIdAndId(sellerId,form.getId())
                 .orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
-        product.setName(form.getName());
-        product.setDescription(form.getDescription());
+        product.updateByForm(form);
 
         for(UpdateProductItemForm itemForm: form.getItems()){
             ProductItem productItem = product.getProductItems().stream()
-                            .filter(pi->pi.getId().equals(itemForm.getId()))
+                            .filter(pi->pi.getId().equals(itemForm.getProductItemId()))
                                     .findFirst().orElseThrow(()-> new CustomException(ErrorCode.NOT_FOUND_ITEM));
-            productItem.setName(itemForm.getName());
-            productItem.setCount(itemForm.getCount());
-            productItem.setPrice(itemForm.getPrice());
+            productItem.updateFromForm(itemForm);
         }
         return product;
     }

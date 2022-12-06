@@ -44,11 +44,10 @@ public class CartApplication {
     public Cart getCart(Long customerId){
         Cart cart  = refreshCart(cartService.getCart(customerId));
         cartService.putCart(cart.getCustomerId(),cart);
-        Cart returnCart = new Cart();
-        returnCart.setCustomerId(customerId);
+        Cart returnCart = new Cart(customerId);
         returnCart.setProducts(cart.getProducts());
-        returnCart.setMessages(cart.getMessages());
-        cart.setMessages(new ArrayList<>());
+        returnCart.addMessage(cart.getMessages());
+        cart.initializeMessages();
         cartService.putCart(customerId,cart);
         return returnCart;
     }
@@ -68,9 +67,9 @@ public class CartApplication {
 
            Product p = productMap.get(cartProduct.getId());
            if(p == null){
-               cart.getProducts().remove(cartProduct);
+               cart.removeProduct(cartProduct);
                i--;
-               cart.addMessage(cartProduct.getName() + "상품이 제거되되었습니다.");
+               cart.addMessage(cartProduct.getName() + " 상품이 제거되었습니다.");
                continue;
            }
 
@@ -105,7 +104,7 @@ public class CartApplication {
 
 
                 if(cartProduct.getItems().size() == 0) {
-                    cart.getProducts().remove(cartProduct);
+                    cart.removeProduct(cartProduct);
                     i--;
                     cart.addMessage(cartProduct.getName() + " 상품의 옵션이 모두 없어져 구매가 불가능합니다.");
                 }

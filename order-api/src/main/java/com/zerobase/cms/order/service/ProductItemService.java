@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class ProductItemService {
 
     private final ProductRepository productRepository;
     private final ProductItemRepository productItemRepository;
-
-    @Transactional
+    @Transactional(readOnly = true)
     public ProductItem getProductItem(Long id){
         return productItemRepository.getById(id);
     }
@@ -27,7 +27,6 @@ public class ProductItemService {
         return productItemRepository.save(productItem);
     }
 
-    @Transactional
     public Product addProductItem(Long sellerId, AddProductItemForm form){
         Product product = productRepository.findBySellerIdAndId(sellerId,form.getProductId())
                 .orElseThrow( () -> new CustomException(ErrorCode.NOT_FOUND_PRODUCT));
@@ -42,18 +41,14 @@ public class ProductItemService {
         return product;
     }
 
-    @Transactional
     public ProductItem updateProductItem(Long sellerId, UpdateProductItemForm form){
-        ProductItem productItem = productItemRepository.findById(form.getId())
+        ProductItem productItem = productItemRepository.findById(form.getProductItemId())
                 .filter(pi->pi.getSellerId().equals(sellerId)).orElseThrow(
                         ()->new CustomException(ErrorCode.NOT_FOUND_ITEM));
-        productItem.setName(form.getName());
-        productItem.setCount(form.getCount());
-        productItem.setPrice(form.getPrice());
+        productItem.updateFromForm(form);
         return productItem;
     }
 
-    @Transactional
     public void deleteProductItem(Long sellerId, Long productItemId){
         ProductItem productItem = productItemRepository.findById(productItemId)
                 .filter(pi->pi.getSellerId().equals(sellerId)).orElseThrow(
