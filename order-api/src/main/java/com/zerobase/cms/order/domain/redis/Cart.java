@@ -69,6 +69,9 @@ public class Cart {
         public void setName(String name) {
             this.name = name;
         }
+        public void removeItem(ProductItem item){
+            this.items.remove(item);
+        }
     }
 
     @Getter
